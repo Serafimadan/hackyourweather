@@ -1,35 +1,53 @@
-import React from 'react';
-import CityInformation from './CityInformation';
-const cityWeather = require('../sources/city-weather.json');
-
+import React, { useState } from 'react';
+import SearchForm from './SearchingForm';
+import CityWeatherInformation from './CityWeatherInformation';
 
 const CityInfoList = () => {
-    const newArray = cityWeather.map((item, i) => {
-        // Kelvin to Celsius
-        function converterTemperature(valNum) {
-            let Celsius = valNum -273.15;
-            return Math.round(Celsius);
+    let [city, setCity] = useState('');
+    let [weatherInfo, setWeatherInfo] = useState({});
+    let [error, setError] = useState(false);
+    let [loading, setLoading] = useState(false);
+    
+    const API_KEY = process.env.REACT_APP_OPENWEATHERMAP_API_KEY;
+    
+    function getWeatherInfo(e) {
+        e.preventDefault();
+        if (city.length === 0) {
+            return setError(true);
         }
-        return (
-            <CityInformation  
-                key = {i} 
-                cityName = {item.name} 
-                countryName = {item.sys.country} 
-                weatherType = {item.weather.map((weatherName) => { return (weatherName.main)})} 
-                weatherDescription = {item.weather.map((weatherDescrip) => { return (weatherDescrip.description)}) } 
-                tempMin = {converterTemperature(item.main.temp_min)} 
-                tempMax = {converterTemperature(item.main.temp_max)} 
-                locationLat = {item.coord.lat} 
-                locationLon = {item.coord.lon}/>)
-    })
-        return (
-            <div className = 'container'>
-                <h2>Weather</h2>
-                <div className = 'blocks-container'> 
-                    <ul className = 'weather-list'>{newArray}</ul>
-                </div>
-            </div>
-        )
+        // clear state in preparation for new data
+        setError(false);
+        setWeatherInfo({});
+        setLoading(true);
+        fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`)
+        .then(response => response.json())
+        .then(response => {
+            if (response.cod !== 200) {
+                throw new Error()
+            }
+            setWeatherInfo(response);
+            setLoading(false);
+        })
+        .catch(error => {
+            setError(true);
+            setLoading(false);
+            console.log(error.message);
+        });
     }
-    export default CityInfoList;
+    
+    return (
+        <div className = 'container'>
+            <h1>Weather</h1>
+            <SearchForm getWeatherInfo = {getWeatherInfo} setCity = {setCity} city={city}/>
+            <div className = 'weather-list'>
+                <CityWeatherInformation 
+                    weatherInfo={weatherInfo}
+                    error={error}
+                    loading={loading}
+                />
+            </div>
+        </div>
+    )
+}
+export default CityInfoList;
     

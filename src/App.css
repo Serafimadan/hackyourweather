@@ -57,6 +57,41 @@
   font-weight: bold;
 }
 
+form {
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.buttonSearch {
+  color: black;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #9E9E9E;
+  border-radius: 3px;
+  padding: 10px;
+  border: 1px solid black;
+  margin-left: 10px;
+}
+
+input {
+  width: 20%;
+  padding: 10px;
+  background-color: rgb(237 244 253 / 55%);
+  border-radius: 8px;
+  border: 1px solid black;
+}
+
+.buttonSearch:focus, .buttonSearch:active {
+  border-color: transparent;
+  outline: none;
+}
+input:focus, input:active {
+  border-color:  black;
+  outline: 0;
+  outline-offset: 0;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
